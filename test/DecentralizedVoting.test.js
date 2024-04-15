@@ -9,17 +9,14 @@ describe("DecentralizedVoting", function () {
   let addr2;
   let points = 0;
 
-  async function deployContract() {
+  beforeEach(async function () {
     [owner, addr1, addr2] = await ethers.getSigners();
     DecentralizedVoting = await ethers.getContractFactory("DecentralizedVoting");
     decentralizedVoting = await DecentralizedVoting.deploy();
-    await decentralizedVoting.deployed();
-  }
+  });
 
   describe("Create a proposal", function () {
     it("Should create a new proposal (+ 12 points)", async function () {
-      await deployContract();
-
       await decentralizedVoting.connect(addr1).createProposal(1, "Test Proposal");
       const proposal = await decentralizedVoting.proposals(1);
 
@@ -30,8 +27,6 @@ describe("DecentralizedVoting", function () {
     });
 
     it("Should not create a proposal if it already exists (+ 8.5 points)", async function () {
-      await deployContract();
-
       await decentralizedVoting.connect(addr1).createProposal(1, "Test Proposal");
 
       await expect(decentralizedVoting.connect(addr2).createProposal(1, "Test Proposal")).to.be.reverted;
@@ -42,8 +37,6 @@ describe("DecentralizedVoting", function () {
 
   describe("Vote on a proposal", function () {
     it("Should allow voting on a proposal (+ 12 points)", async function () {
-      await deployContract();
-
       await decentralizedVoting.connect(addr1).createProposal(1, "Test Proposal");
       await decentralizedVoting.connect(addr2).vote(1, true);
 
@@ -57,8 +50,6 @@ describe("DecentralizedVoting", function () {
 
   describe("Count votes for a proposal", function () {
     it("Should count the votes for a proposal (+ 10 points)", async function () {
-      await deployContract();
-
       await decentralizedVoting.connect(addr1).createProposal(1, "Test Proposal");
       await decentralizedVoting.connect(addr2).vote(1, true);
       await decentralizedVoting.countVotes(1);
