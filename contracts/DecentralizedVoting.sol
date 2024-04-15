@@ -16,6 +16,7 @@ contract DecentralizedVoting {
     // Events to emit on proposal creation and voting
     event ProposalCreated(uint256 proposalId, string description);
     event Voted(uint256 proposalId, address voter, bool inSupport);
+    event VotesCounted(uint256 proposalId, uint256 forVotes, uint256 againstVotes);
 
     // Function to create a new proposal
     function createProposal(uint256 proposalId, string memory description) public {
@@ -39,5 +40,13 @@ contract DecentralizedVoting {
         }
         
         emit Voted(proposalId, msg.sender, inSupport);
+    }
+
+    // Function to count votes for a proposal
+    function countVotes(uint256 proposalId) public {
+        require(proposals[proposalId].exists, "Proposal does not exist");
+
+        Proposal storage proposal = proposals[proposalId];
+        emit VotesCounted(proposalId, proposal.forVotes, proposal.againstVotes);
     }
 }
