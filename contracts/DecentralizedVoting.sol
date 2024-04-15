@@ -49,7 +49,7 @@ contract DecentralizedVoting {
 
     function totalVotes() public view returns (uint256) {
         uint256 total = 0;
-        for (uint256 i = 0; i < proposals.length; i++) {
+        for (uint256 i = 1; i <= proposalIdCounter; i++) {
             Proposal storage proposal = proposals[i];
             total += proposal.forVotes + proposal.againstVotes;
         }
