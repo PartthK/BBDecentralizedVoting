@@ -13,6 +13,7 @@ describe("DecentralizedVoting", function () {
     [owner, voter1, voter2, voter3] = await ethers.getSigners();
     DecentralizedVoting = await ethers.getContractFactory("DecentralizedVoting");
     decentralizedVoting = await DecentralizedVoting.deploy();
+    await decentralizedVoting.deployed();
   });
 
   describe("Create a proposal", function () {
@@ -39,11 +40,16 @@ describe("DecentralizedVoting", function () {
 
       expect(proposal2.againstVotes).to.equal(1);
     });
+
+    it("Should not allow voting if voter has no voting power", async function () {
+      await decentralizedVoting.createProposal(1, "Test Proposal");
+      await expect(decentralizedVoting.vote(1, true)).to.be.revertedWith("Sender has no voting power");
+    });
   });
 
   describe("Delegate votes", function () {
     it("Should allow voters to delegate their votes", async function () {
-      await decentralizedVoting.delegate(voter2.address);
+      await decentralizedVoting.connect(voter1).delegate(voter2.address);
 
       await decentralizedVoting.createProposal(1, "Test Proposal");
       await decentralizedVoting.connect(voter1).vote(1, true);
@@ -55,7 +61,18 @@ describe("DecentralizedVoting", function () {
     });
 
     it("Should not allow self-delegation", async function () {
-      await expect(decentralizedVoting.delegate(voter1.address)).to.be.reverted;
+      await expect(decentralizedVoting.connect(voter1).delegate(voter1.address)).to.be.revertedWith("Self-delegation is not allowed");
+    });
+  });
+
+  describe("Total votes", function () {
+    it("Should update total votes correctly", async function () {
+      await decentralizedVoting.createProposal(1, "Test Proposal");
+      await decentralizedVoting.connect(voter1).vote(1, true);
+      await decentralizedVoting.connect(voter2).vote(1, true);
+
+      const totalVotes = await decentralizedVoting.totalVotes();
+      expect(totalVotes).to.equal(2);
     });
   });
 });
