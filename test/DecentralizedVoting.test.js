@@ -21,6 +21,8 @@ describe("DecentralizedVoting", function () {
     Lock = await ethers.getContractFactory("Lock");
     lock = await Lock.deploy(Math.round(Date.now() / 1000) + 60, { value: ethers.utils.parseEther("0.001") });
     await lock.deployed();
+
+    return [decentralizedVoting, lock];
   }
 
   describe("Create a proposal", function () {
