@@ -42,11 +42,11 @@ describe("DecentralizedVoting", function () {
     it("Should allow voting on a proposal (+ 12 points)", async function () {
       await decentralizedVoting.connect(addr1).createProposal(1, "Test Proposal");
       await decentralizedVoting.connect(addr2).vote(1, true);
-
+  
       const proposal = await decentralizedVoting.proposals(1);
-
-      expect(proposal.forVotes).to.equal(100); // Account `addr2` has a voting weight of 200
-
+  
+      expect(proposal.forVotes).to.equal(200); // Account `addr2` has a voting weight of 200
+  
       points += 12;
     });
   });
@@ -56,12 +56,12 @@ describe("DecentralizedVoting", function () {
       await decentralizedVoting.connect(addr1).createProposal(1, "Test Proposal");
       await decentralizedVoting.connect(addr2).vote(1, true);
       await decentralizedVoting.countVotes(1);
-
+  
       const proposal = await decentralizedVoting.proposals(1);
-
-      expect(proposal.forVotes).to.equal(100); // Account `addr2` has a voting weight of 200
+  
+      expect(proposal.forVotes).to.equal(200); // Account `addr2` has a voting weight of 200
       expect(proposal.againstVotes).to.equal(0);
-
+  
       points += 10;
     });
   });
