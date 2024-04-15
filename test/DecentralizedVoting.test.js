@@ -63,9 +63,23 @@ describe("DecentralizedVoting", function () {
     });
   });
 
+  describe("Assign voting weights", function () {
+    it("Should assign voting weights to voters (+ 12 points)", async function () {
+      await decentralizedVoting.assignVotingWeight([addr1.address, addr2.address], [100, 200]);
+
+      const weight1 = await decentralizedVoting.voterWeights(addr1.address);
+      const weight2 = await decentralizedVoting.voterWeights(addr2.address);
+
+      expect(weight1).to.equal(100);
+      expect(weight2).to.equal(200);
+
+      points += 12;
+    });
+  });
+
   describe("Total points", function () {
-    it("You should have 42.5/42.5 on this assignment.", async function () {
-      expect(points).to.equal(42.5);
+    it("You should have 54.5/54.5 on this assignment.", async function () {
+      expect(points).to.equal(54.5);
     });
   });
 });
