@@ -4,8 +4,6 @@ const { expect } = require("chai");
 describe("DecentralizedVoting", function () {
   let DecentralizedVoting;
   let decentralizedVoting;
-  let Lock;
-  let lock;
   let owner;
   let addr1;
   let addr2;
@@ -13,16 +11,9 @@ describe("DecentralizedVoting", function () {
 
   async function deployContract() {
     [owner, addr1, addr2] = await ethers.getSigners();
-
     DecentralizedVoting = await ethers.getContractFactory("DecentralizedVoting");
     decentralizedVoting = await DecentralizedVoting.deploy();
     await decentralizedVoting.deployed();
-
-    Lock = await ethers.getContractFactory("Lock");
-    lock = await Lock.deploy(Math.round(Date.now() / 1000) + 60, { value: ethers.utils.parseEther("0.001") });
-    await lock.deployed();
-
-    return [decentralizedVoting, lock];
   }
 
   describe("Create a proposal", function () {
