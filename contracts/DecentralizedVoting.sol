@@ -10,41 +10,34 @@ contract DecentralizedVoting {
     }
 
     mapping(uint256 => Proposal) public proposals;
-    mapping(address => address) public delegates;
-    mapping(address => uint256) public votingPower;
+    uint256 public proposalIdCounter;
 
     event ProposalCreated(uint256 proposalId, string description);
     event Voted(uint256 proposalId, address voter, bool inSupport);
-    event Delegated(address delegator, address delegate);
 
     function createProposal(uint256 proposalId, string memory description) public {
         require(!proposals[proposalId].exists, "Proposal already exists");
 
         Proposal memory newProposal = Proposal(description, 0, 0, true);
         proposals[proposalId] = newProposal;
+        
+        // Increment proposalIdCounter
+        proposalIdCounter++;
 
         emit ProposalCreated(proposalId, description);
     }
 
     function vote(uint256 proposalId, bool inSupport) public {
         require(proposals[proposalId].exists, "Proposal does not exist");
-        require(votingPower[msg.sender] > 0, "Sender has no voting power");
 
         Proposal storage proposal = proposals[proposalId];
         if (inSupport) {
-            proposal.forVotes += votingPower[msg.sender];
+            proposal.forVotes++;
         } else {
-            proposal.againstVotes += votingPower[msg.sender];
+            proposal.againstVotes++;
         }
 
         emit Voted(proposalId, msg.sender, inSupport);
-    }
-
-    function delegate(address delegatee) public {
-        require(msg.sender != delegatee, "Self-delegation is not allowed");
-
-        delegates[msg.sender] = delegatee;
-        emit Delegated(msg.sender, delegatee);
     }
 
     function totalVotes() public view returns (uint256) {
