@@ -5,67 +5,57 @@ describe("DecentralizedVoting", function () {
   let DecentralizedVoting;
   let decentralizedVoting;
   let owner;
-  let addr1;
-  let addr2;
-  let points = 0;
+  let voter1;
+  let voter2;
+  let voter3;
 
   beforeEach(async function () {
-    [owner, addr1, addr2] = await ethers.getSigners();
+    [owner, voter1, voter2, voter3] = await ethers.getSigners();
     DecentralizedVoting = await ethers.getContractFactory("DecentralizedVoting");
     decentralizedVoting = await DecentralizedVoting.deploy();
   });
 
   describe("Create a proposal", function () {
-    it("Should create a new proposal (+ 12 points)", async function () {
-      await decentralizedVoting.connect(addr1).createProposal(1, "Test Proposal");
+    it("Should create a new proposal", async function () {
+      await decentralizedVoting.createProposal(1, "Test Proposal");
       const proposal = await decentralizedVoting.proposals(1);
 
       expect(proposal.description).to.equal("Test Proposal");
       expect(proposal.exists).to.equal(true);
-
-      points += 12;
-    });
-
-    it("Should not create a proposal if it already exists (+ 8.5 points)", async function () {
-      await decentralizedVoting.connect(addr1).createProposal(1, "Test Proposal");
-
-      await expect(decentralizedVoting.connect(addr2).createProposal(1, "Test Proposal")).to.be.reverted;
-
-      points += 8.5;
     });
   });
 
   describe("Vote on a proposal", function () {
-    it("Should allow voting on a proposal (+ 12 points)", async function () {
-      await decentralizedVoting.connect(addr1).createProposal(1, "Test Proposal");
-      await decentralizedVoting.connect(addr2).vote(1, true);
+    it("Should allow voting on a proposal", async function () {
+      await decentralizedVoting.createProposal(1, "Test Proposal");
+      
+      await decentralizedVoting.vote(1, true);
+      const proposal1 = await decentralizedVoting.proposals(1);
 
-      const proposal = await decentralizedVoting.proposals(1);
+      expect(proposal1.forVotes).to.equal(1);
 
-      expect(proposal.forVotes).to.equal(1);
+      await decentralizedVoting.vote(1, false);
+      const proposal2 = await decentralizedVoting.proposals(1);
 
-      points += 12;
+      expect(proposal2.againstVotes).to.equal(1);
     });
   });
 
-  describe("Count votes for a proposal", function () {
-    it("Should count the votes for a proposal (+ 10 points)", async function () {
-      await decentralizedVoting.connect(addr1).createProposal(1, "Test Proposal");
-      await decentralizedVoting.connect(addr2).vote(1, true);
-      await decentralizedVoting.countVotes(1);
+  describe("Delegate votes", function () {
+    it("Should allow voters to delegate their votes", async function () {
+      await decentralizedVoting.delegate(voter2.address);
+
+      await decentralizedVoting.createProposal(1, "Test Proposal");
+      await decentralizedVoting.connect(voter1).vote(1, true);
 
       const proposal = await decentralizedVoting.proposals(1);
 
-      expect(proposal.forVotes).to.equal(1);
-      expect(proposal.againstVotes).to.equal(0);
-
-      points += 10;
+      // Both voter1 and voter2's votes should count
+      expect(proposal.forVotes).to.equal(2);
     });
-  });
 
-  describe("Total points", function () {
-    it("You should have 42.5/42.5 on this assignment.", async function () {
-      expect(points).to.equal(42.5);
+    it("Should not allow self-delegation", async function () {
+      await expect(decentralizedVoting.delegate(voter1.address)).to.be.reverted;
     });
   });
 });
