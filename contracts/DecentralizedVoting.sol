@@ -22,6 +22,7 @@ contract DecentralizedVoting {
     
     event ProposalCreated(uint256 indexed proposalId, string description);
     event Voted(uint256 indexed proposalId, address voter, bool inSupport);
+    event Delegated(address indexed from, address indexed to);
 
     function createProposal(uint256 proposalId, string memory description) public {
         require(!proposals[proposalId].exists, "Proposal already exists");
@@ -57,5 +58,7 @@ contract DecentralizedVoting {
         
         // Update total votes
         totalVotes += power;
+
+        emit Delegated(msg.sender, to);
     }
 }
