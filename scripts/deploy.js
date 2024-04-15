@@ -17,10 +17,18 @@ async function main() {
   // Wait for the deployment transaction to be mined
   await lock.deployed();
 
-  // Log deployment details
+  // Log Lock deployment details
   console.log(
     `Lock with ${ethers.utils.formatEther(lockedAmount)} ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`
   );
+
+  // Deploy the DecentralizedVoting contract
+  const DecentralizedVoting = await ethers.getContractFactory("DecentralizedVoting");
+  const decentralizedVoting = await DecentralizedVoting.deploy();
+  await decentralizedVoting.deployed();
+
+  // Log DecentralizedVoting deployment details
+  console.log("DecentralizedVoting contract deployed to:", decentralizedVoting.address);
 }
 
 // Run the main function and handle errors
