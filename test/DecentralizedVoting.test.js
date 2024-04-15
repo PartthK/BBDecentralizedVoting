@@ -13,6 +13,9 @@ describe("DecentralizedVoting", function () {
     [owner, addr1, addr2] = await ethers.getSigners();
     DecentralizedVoting = await ethers.getContractFactory("DecentralizedVoting");
     decentralizedVoting = await DecentralizedVoting.deploy();
+
+    // Assign voting weights to voters
+    await decentralizedVoting.assignVotingWeight([addr1.address, addr2.address], [100, 200]);
   });
 
   describe("Create a proposal", function () {
@@ -42,7 +45,7 @@ describe("DecentralizedVoting", function () {
 
       const proposal = await decentralizedVoting.proposals(1);
 
-      expect(proposal.forVotes).to.equal(1);
+      expect(proposal.forVotes).to.equal(100); // Account `addr2` has a voting weight of 200
 
       points += 12;
     });
@@ -56,7 +59,7 @@ describe("DecentralizedVoting", function () {
 
       const proposal = await decentralizedVoting.proposals(1);
 
-      expect(proposal.forVotes).to.equal(1);
+      expect(proposal.forVotes).to.equal(100); // Account `addr2` has a voting weight of 200
       expect(proposal.againstVotes).to.equal(0);
 
       points += 10;
@@ -65,8 +68,6 @@ describe("DecentralizedVoting", function () {
 
   describe("Assign voting weights", function () {
     it("Should assign voting weights to voters (+ 12 points)", async function () {
-      await decentralizedVoting.assignVotingWeight([addr1.address, addr2.address], [100, 200]);
-
       const weight1 = await decentralizedVoting.voterWeights(addr1.address);
       const weight2 = await decentralizedVoting.voterWeights(addr2.address);
 
