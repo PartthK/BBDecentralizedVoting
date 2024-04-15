@@ -50,7 +50,7 @@ describe("DecentralizedVoting", function () {
       points += 12;
     });
   });
-
+  
   describe("Count votes for a proposal", function () {
     it("Should count the votes for a proposal (+ 10 points)", async function () {
       await decentralizedVoting.connect(addr1).createProposal(1, "Test Proposal");
@@ -65,6 +65,7 @@ describe("DecentralizedVoting", function () {
       points += 10;
     });
   });
+
 
   describe("Assign voting weights", function () {
     it("Should assign voting weights to voters (+ 12 points)", async function () {
