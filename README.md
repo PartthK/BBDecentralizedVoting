@@ -30,7 +30,7 @@ Functionality:
 git clone https://github.com/PartthK/BBDecentralizedVoting.git
 ```
 3. Open a terminal in the folder that was cloned
-4. Type ```npm install``` (this should download all necessary packages)
+4. Type ```npm install``` to download all necessary packages
 
-You can now place your smart contract inside the contracts folder, and run ```npx hardhat test``` in the terminal to test the smart contract.
+Place your smart contract inside the contracts folder, and run ```npx hardhat test``` in the terminal to test the smart contract and achieve the desired functionality.
 
